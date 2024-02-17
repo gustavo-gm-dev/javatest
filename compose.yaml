@@ -1,0 +1,37 @@
+services:
+  javatest:
+    build: ./
+    ports:
+      - 8080:8080
+    environment:
+      - POSTGRES_DB=postgres
+    networks:
+      - spring-postgres
+  db:
+    image: postgres
+    restart: always
+    secrets:
+      - db-password
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - spring-postgres
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+    ports:
+      - 5432:5432
+volumes:
+  db-data:
+  postgres-db-volume:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: ./data
+  
+secrets:
+  db-password:
+    file: db/password.txt
+networks:
+  spring-postgres:
