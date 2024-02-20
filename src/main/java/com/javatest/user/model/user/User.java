@@ -5,18 +5,22 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.javatest.user.model.profile.Profile;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 @Table(name = "tb_user")
 @Entity(name = "tb_user")
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
@@ -28,7 +32,7 @@ public class User implements UserDetails {
     private String password;
     private String email;
     // private UserRole role;
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "id")
     private List<Profile> profiles;
 
@@ -40,12 +44,26 @@ public class User implements UserDetails {
         // this.role = role;
     }
 
+    // @Override
+    // public Collection<? extends GrantedAuthority> getAuthorities() {
+    //     for (Profile profile : this.profiles){
+    //         if(profile.getRole().equals(UserRole.ADMIN.name())) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+    //     } 
+    //     return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+    // }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        for (Profile profile : this.profiles){
-            if(profile.getRole().equals(UserRole.ADMIN.name())) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
-        } 
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        for (Profile profile : this.profiles) {
+            if (profile.getRole().equals(UserRole.ROLE_ADMIN.name())) {
+                authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+            }
+        }
+        if (authorities.isEmpty()) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        }
+        return authorities;
     }
 
     @Override

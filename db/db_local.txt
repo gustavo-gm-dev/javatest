@@ -1,0 +1,1 @@
+docker run --name db_local -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=uOK9knrhL592NHY -v javatest_db-data:/var/lib/postgresql/data -d postgres

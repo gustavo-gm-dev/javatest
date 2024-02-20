@@ -1,8 +1,8 @@
 package com.javatest.user.model.user;
 
 public enum UserRole {
-    ADMIN("admin"),
-    USER("user");
+    ROLE_ADMIN("admin"),
+    ROLE_USER("user");
 
     private String role;
 
